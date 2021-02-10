@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - برنامج خيرات</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-default navbar-fixed-top pull-right">
+        <div class="container ">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("خيرات", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                @if (Request.IsAuthenticated)
+                {
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">الاعمال<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("المهام المطلوبة", "Index", "ToDoTasks")</li>
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("المهام المتوفرة", "Index", "ToDoTasks")</li>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li role="separator" class="divider"></li>
+                                    <li>@Html.ActionLink("المتطوعين", "Index", "Volunteers")</li>
+                                }
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">طلبات<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("الطلبات", "Index", "Requests")</li>
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("اطلب الان", "Create", "Requests")</li>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li role="separator" class="divider"></li>
+                                    <li>@Html.ActionLink("المستفيدين", "Index", "Beneficiaries")</li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>@Html.ActionLink("انواع الطلبات", "Index", "RequestTypes")</li>
+                                }
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">تبرع<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("التبرعات", "Index", "Donations")</li>
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("تبرع الان", "Create", "Donations")</li>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li role="separator" class="divider"></li>
+                                    <li>@Html.ActionLink("المتبرعين", "Index", "Donors")</li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>@Html.ActionLink("انواع التبرعات", "Index", "DonationTypes")</li>
+                                }
+                            </ul>
+                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">ادارة الحسابات<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>@Html.ActionLink("تعريف الحسابات", "Index", "Accounts")</li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>@Html.ActionLink("تعريف العمليات", "Index", "OperationTypes")</li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>@Html.ActionLink("تعريف فعاليات العمليات", "Index", "OperationActions")</li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">ادارة المستخدمين<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>@Html.ActionLink("ادارة الصلاحيات", "Index", "UsersRolesManager")</li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                }
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - برنامج خيرات</p>
+        </footer>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script>
+        var x = document.getElementById("Address");
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+        function showPosition(position) {
+            x.value = position.coords.latitude +
+                "," + position.coords.longitude;
+
+        }
+    </script>
+
+</body>
+</html>

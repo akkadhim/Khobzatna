@@ -1,0 +1,83 @@
+﻿@model Khobzatna.Models.OperationAction
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>OperationAction</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Account.AccountNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Account.AccountNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OperationType.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OperationType.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Direction)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Direction)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ActionType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ActionType)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsFinalNode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsFinalNode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsVisible)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsVisible)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HasVehicle)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HasVehicle)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HasContainer)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HasContainer)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.OperationActionId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

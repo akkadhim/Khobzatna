@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Khobzatna.Models.ToDoTask>
+
+@{
+    ViewBag.Title = "اعمال تطوعية";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>اعمال تطوعية</h2>
+
+<p>
+    @Html.ActionLink("انشاء", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Note)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Note)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Date)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ToDoTaskId }) |
+            @Html.ActionLink("التفاصيل", "Details", new { id=item.ToDoTaskId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ToDoTaskId })
+        </td>
+    </tr>
+}
+
+</table>

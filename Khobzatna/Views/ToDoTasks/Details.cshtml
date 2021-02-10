@@ -1,0 +1,302 @@
+﻿@model Khobzatna.Models.ToDoTask
+@using Khobzatna.Helper
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<MapInfo> markers = ViewBag.MapInfo;
+}
+<style>
+    .iframe-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* Ratio 16:9 ( 100%/16*9 = 56.25% ) */
+    }
+
+    .iframe-container > * {
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    .container-fluid {
+        height: 100%;
+        position: relative;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h2>تفاصيل المهمة</h2>
+            </div>
+            <div class="panel-body">
+                <div class="container">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3>
+                                    ملخص المهمة
+                                </h3>
+                            </div>
+                            <div class="col-md-6 ">
+                                @Html.ActionLink("Edit", "Edit", new { id = Model.ToDoTaskId })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.Note)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Note)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.Status)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Status)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.Date)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Date)
+                                </dd>
+
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (User.IsInRole("Manager"))
+            {
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h4>اضافة عمل للمهمة</h4>
+                        </div>
+                        <div class="col-md-6">
+                            @using (Html.BeginForm("JobAssignment", "ToDoTasks", FormMethod.Get, null))
+                            {
+                                <input type="hidden" value="@Model.ToDoTaskId" id="TaskId" name="TaskId" />
+                                <button class="btn btn-success" type="submit">اضافة</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div id="output" class="col-md-12" dir="ltr"></div>
+    </div>
+    @if (Model.Jobs != null)
+    {
+        <div class="col-md-8">
+            <div class="row">
+                <table class="table">
+                    <tr>
+                        <th class="bg-primary">
+                            المهام التفصيلية
+                            (@Model.Jobs.Count())
+                        </th>
+                    </tr>
+
+                    @foreach (var item in Model.Jobs)
+                    {
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        @Html.DisplayFor(modelItem => item.Note),
+                                        @Html.DisplayFor(modelItem => item.Date),
+                                        @if (item.Volunteer != null)
+                                        {
+                                            @:المتطوع @Html.DisplayFor(modelItem => item.Volunteer.Name),
+                                        }
+                                        @Html.DisplayFor(modelItem => item.Status),
+                                        @if (item.Request != null)
+                                        {
+                                            @Html.DisplayFor(modelItem => item.Beneficiary.Name)@:,
+                                        }
+                                        @if (item.Donation != null)
+                                        {
+                                            @:المتبرع @Html.DisplayFor(modelItem => item.Donor.Name) ,
+                                        }
+                                    </div>
+                                    <div class="col-md-6" dir="ltr">
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            @using (Html.BeginForm("Create", "Donations", FormMethod.Get, new { @class = "btn-group" }))
+                                            {
+                                                <input type="hidden" value="@item.JobId" id="JobId" name="JobId" />
+                                                <input type="hidden" value="true" id="IsIdentity" name="IsIdentity" />
+                                                <input type="submit" class="btn btn-primary" value="اتبرع">
+                                            }
+                                            @if (User.IsInRole("Manager"))
+                                            {
+                                                using (Html.BeginForm("Create", "Donations", FormMethod.Get, new { @class = "btn-group" }))
+                                                {
+                                                    <input type="hidden" value="@item.JobId" id="JobId" name="JobId" />
+                                                    <input type="hidden" value="false" id="IsIdentity" name="IsIdentity" />
+                                                    <input type="submit" class="btn btn-default" value="اضافة متبرع">
+                                                }
+                                            }
+                                            @using (Html.BeginForm("VolunteerAssignment", "ToDoTasks", FormMethod.Get, new { @class = "btn-group" }))
+                                            {
+                                                <input type="hidden" value="@item.JobId" id="JobId" name="JobId" />
+                                                <input type="hidden" value="true" id="IsIdentity" name="IsIdentity" />
+                                                <input type="submit" class="btn btn-success" value="اتطوع">
+                                            }
+                                            @if (User.IsInRole("Manager"))
+                                            {
+                                                using (Html.BeginForm("VolunteerAssignment", "ToDoTasks", FormMethod.Get, new { @class = "btn-group" }))
+                                                {
+                                                    <input type="hidden" value="@item.JobId" id="JobId" name="JobId" />
+                                                    <input type="hidden" value="false" id="IsIdentity" name="IsIdentity" />
+                                                    <input type="submit" class="btn btn-default" value="اضافة متطوع">
+                                                }
+                                            }
+                                            @if (User.IsInRole("Manager"))
+                                            {
+                                                using (Html.BeginForm("JobRemove", "ToDoTasks", FormMethod.Post, new { @class = "btn-group" }))
+                                                {
+                                                    <button class="btn btn-danger" type="submit">حذف</button>
+                                                    <input type="hidden" value="@item.JobId" id="JobId" name="JobId" />
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="container-fluid">
+                <div id="myMap" class="iframe-container"></div>
+            </div>
+            <div class="col-md-12">
+            </div>
+        </div>
+    }
+</div>
+
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol'></script>
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=AkPhgx7hJ1HClrNXdmU1qr5CK84LtuFTbLSE51mLBC2zc3N48UxSyvS-JNBFXxcL&callback=loadMapScenario' async defer></script>
+
+    <script type='text/javascript'>
+        var addresses = [];
+        var map, drawingManager, outputPanel;
+
+        @if (markers != null)
+        {
+            foreach (var point in markers)
+            {
+                @:addresses.push({ Lat : '@point.Lat' , Lng : '@point.Lng' , label : '@point.Title', color : '@point.Color'});
+            }
+        }
+
+        function loadMapScenario() {
+
+            var bounds = Microsoft.Maps.LocationRect.fromLocations(new Microsoft.Maps.Location(37.217863, 38.811895), new Microsoft.Maps.Location(28.965617, 48.589727));
+            map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+                /* No need to set credentials if already passed in URL */
+                maxBounds: bounds
+            });
+
+
+
+            outputPanel = document.getElementById('output');
+
+            // Highlighting the border of bounds on the map
+            var boundsBorder = new Microsoft.Maps.Polyline([bounds.getNorthwest(),
+                new Microsoft.Maps.Location(bounds.getNorthwest().latitude, bounds.getSoutheast().longitude),bounds.getSoutheast(),
+                new Microsoft.Maps.Location(bounds.getSoutheast().latitude, bounds.getNorthwest().longitude), bounds.getNorthwest()],
+                { strokeColor: 'red', strokeThickness: 5 });
+            map.entities.push(boundsBorder);
+
+            //Load the Drawing Tools and Spatial Math modules.
+            Microsoft.Maps.loadModule(['Microsoft.Maps.DrawingTools', 'Microsoft.Maps.SpatialMath'], function () {
+                var tools = new Microsoft.Maps.DrawingTools(map);
+                tools.showDrawingManager(function (manager) {
+                    //Store a reference to the drawing manager as it will be useful later.
+                    drawingManager = manager;
+                    Microsoft.Maps.Events.addHandler(drawingManager, 'drawingModeChanged', function (e) {
+                        if (e !== Microsoft.Maps.DrawingTools.DrawingMode.edit &&
+                            e !== Microsoft.Maps.DrawingTools.DrawingMode.erase) {
+                            //Remove any shapes already on the drawing layer.
+                            drawingManager.clear();
+                        }
+                    });
+                    Microsoft.Maps.Events.addHandler(drawingManager, 'drawingChanging', measureShape);
+                    Microsoft.Maps.Events.addHandler(drawingManager, 'drawingStarted', measureShape);
+                });
+            });
+
+            var locs = [];
+            for (var i = 0; i < addresses.length; i++) {
+                locs[i] = new Microsoft.Maps.Location(addresses[i].Lat, addresses[i].Lng);
+                var pin = new Microsoft.Maps.Pushpin(locs[i], { color: addresses[i].color, title: addresses[i].label });
+                map.entities.push(pin);
+            }
+
+            var polyline = new Microsoft.Maps.Polyline(locs, null);
+            map.entities.push(polyline);
+
+            if (locs.length > 0) {
+                map.setView({
+                    bounds: Microsoft.Maps.LocationRect.fromLocations(locs),
+                    padding: 100
+                });
+            }
+            else {
+                map.setView({
+                    mapTypeId: Microsoft.Maps.MapTypeId.road,
+                    center: new Microsoft.Maps.Location(33.313432, 44.361591),
+                    zoom: 11
+                });
+            }
+        }
+
+        function measureShape(shape) {
+            if (shape instanceof Microsoft.Maps.Pushpin) {
+                outputPanel.innerHTML = 'Shape: Pushpin<br/>' + shape.getLocation();
+            } else if (shape instanceof Microsoft.Maps.Polyline) {
+                //Measure the length of the polyline.
+                var length = Microsoft.Maps.SpatialMath.Geometry.calculateLength(shape, Microsoft.Maps.SpatialMath.DistanceUnits.Miles);
+                //Round values to 2 decimals.
+                length = Math.round(length * 100) / 100;
+                outputPanel.innerHTML = 'Shape: Polyline<br/>Length: ' + length + ' miles';
+            } else if (shape instanceof Microsoft.Maps.Polygon && shape.getLocations().length > 3) {
+                //Calculate the area of the polygon.
+                var area = Microsoft.Maps.SpatialMath.Geometry.area(shape, Microsoft.Maps.SpatialMath.AreaUnits.Acres);
+                //Calculate the perimeter of the polygon.
+                var perimeter = Microsoft.Maps.SpatialMath.Geometry.calculateLength(shape, Microsoft.Maps.SpatialMath.DistanceUnits.Miles);
+                //Round values to 2 decimals.
+                area = Math.round(area * 100) / 100;
+                perimeter = Math.round(perimeter * 100) / 100;
+                outputPanel.innerHTML = 'Shape: Polyline<br/>Area: ' + area + ' Acres</sup><br/>Perimeter: ' + perimeter + ' miles';
+            }
+        }
+    </script>
+}

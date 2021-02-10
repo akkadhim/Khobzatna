@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Khobzatna.Models.Request>
+
+@{
+    ViewBag.Title = "الطلبات";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>الطلبات</h2>
+
+<p>
+    @Html.ActionLink("طلب جديد", "Create")
+</p>
+<table class="table">
+    <tr>
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <th>
+                اسم المستفيد
+            </th>
+        }
+        <th>
+            نوع الطلب
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Note)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <td>
+                @Html.DisplayFor(modelItem => item.Beneficiary.Name)
+            </td>
+        }
+        <td>
+            @Html.DisplayFor(modelItem => item.RequestType.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Note)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @if (User.IsInRole("Admin"))
+            {
+                @Html.ActionLink("تعديل", "Edit", new { id = item.RequestId }) @:|
+            }
+            @Html.ActionLink("تفاصيل", "Details", new { id = item.RequestId }) |
+            @Html.ActionLink("حذف", "Delete", new { id = item.RequestId }) |
+            @if (User.IsInRole("Manager"))
+            {
+                @Html.ActionLink("انشاء مهمة", "Create", "ToDoTasks", new { RequestId = item.RequestId },null)
+            }
+        </td>
+    </tr>
+}
+
+</table>

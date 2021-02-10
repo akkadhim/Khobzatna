@@ -1,0 +1,13 @@
+﻿@model Khobzatna.Helper.MessageHelper
+
+@if (Model != null)
+{
+    <div class="alert alert-@Model.MessageType.ToString() alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+         @Model.Message
+        @if (Model.MessageLink != null)
+        {
+            <a href="@Model.MessageLink" class="alert-link">@Model.MessageLinkText</a>
+        }
+    </div>
+}

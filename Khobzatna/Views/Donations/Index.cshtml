@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Khobzatna.Models.Donation>
+
+@{
+    ViewBag.Title = "التبرعات";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>التبرعات</h2>
+
+<p>
+    @Html.ActionLink("تبرع الان", "Create")
+</p>
+<table class="table">
+    <tr>
+        @if (User.IsInRole("Admin"))
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.Donor.Name)
+            </th>
+        }
+        <th>
+            @Html.DisplayNameFor(model => model.DonationType.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Note)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Payment)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        @if (User.IsInRole("Admin"))
+        {
+            <td>
+                @Html.DisplayFor(modelItem => item.Donor.Name)
+            </td>
+        }
+        <td>
+            @Html.DisplayFor(modelItem => item.DonationType.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Note)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Payment)
+        </td>
+        <td>
+            @if (User.IsInRole("Admin"))
+            {
+                @Html.ActionLink("Edit", "Edit", new { id = item.DonationId }) @:|
+            }
+            @Html.ActionLink("Details", "Details", new { id = item.DonationId }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.DonationId })
+        </td>
+    </tr>
+}
+
+</table>

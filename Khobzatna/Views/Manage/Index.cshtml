@@ -1,0 +1,45 @@
+﻿@model Khobzatna.Models.IndexViewModel
+@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "ادارة حسابي";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div>
+    <h4>غير معلومات حسابك</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>كلمة المرور:</dt>
+        <dd>
+            [
+            @if (Model.HasPassword)
+            {
+                @Html.ActionLink("Change your password", "ChangePassword")
+            }
+            else
+            {
+                @Html.ActionLink("Create", "SetPassword")
+            }
+            ]
+        </dd>
+        <dt>تغيير معلومات حساباتي</dt>
+        <dd>
+            [
+            @if (Model.HasDonor)
+            {
+                @Html.ActionLink("حساب التبرع", "Edit", "Donors", new { id = Model.DonorId }, null) @:|
+            }
+            @if (Model.HasBeneficiary)
+            {
+                @Html.ActionLink("حساب المستفيد", "Edit", "Beneficiaries", new { id = Model.BeneficiaryId }, null) @:|
+            }
+            @if (Model.HasVolunteer)
+            {
+                @Html.ActionLink("حساب المتطوع", "Edit", "Volunteers", new { id = Model.VolunteerId }, null) 
+            }
+            ]
+        </dd>
+    </dl>
+</div>

@@ -1,0 +1,88 @@
+﻿@model IEnumerable<Khobzatna.Models.Job>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Beneficiary.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Donation.Note)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Donor.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Operation.OperationId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Request.Note)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ToDoTask.ToDoTaskId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Volunteer.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Note)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Beneficiary.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Donation.Note)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Donor.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Operation.OperationId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Request.Note)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ToDoTask.ToDoTaskId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Volunteer.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Note)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.JobId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.JobId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.JobId })
+        </td>
+    </tr>
+}
+
+</table>

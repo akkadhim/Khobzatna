@@ -1,0 +1,181 @@
+﻿@using Khobzatna.Helper
+@{
+    ViewBag.Title = "الصفحة الرئيسية";
+    List<MapInfo> markers = ViewBag.MapInfo;
+}
+@Html.Partial("_Alert")
+<style>
+    .iframe-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* Ratio 16:9 ( 100%/16*9 = 56.25% ) */
+    }
+
+        .iframe-container > * {
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+    .container-fluid {
+        height: 100%;
+        position: relative;
+    }
+</style>
+
+
+<div class="jumbotron">
+    <h1>خيرات</h1>
+    <p class="lead">موقع خيرات لأدارة الاعمال الخيرية من تبرعات , تطوع و توزيع للمستفيدين بالاضافة الى نظام محاسبي مدمج للعمليات المالية</p>
+    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="row">
+            <div class="container">
+                <div id="myMap" class="iframe-container"></div>
+            </div>
+        </div>
+        <div class="row col-md-12">
+            <div class="col-md-4">
+                <h2>المتطوعين</h2>
+                <p>
+                    يمكنك الاطلاع على حسابات المتطوعين وادارة الاعمال الخيرية من هنا
+                </p>
+                <p>
+                    @Html.ActionLink("المتطوعين", "Index", "Volunteers", null, null)
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h2>المستفيدين</h2>
+                <p>
+                    يمكنك الاطلاع على حسابات المسستفيدين و ادارة الطلبات من هنا
+                </p>
+                <p>
+                    @Html.ActionLink("المستفيدين", "Index", "Beneficiaries", null, null)
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h2>المتبرعين</h2>
+                <p>
+                    يمكنك الاطلاع على حسابات المتبرعين وادارة التبرعات من هنا
+                </p>
+                <p>
+                    @Html.ActionLink("المتبرعين", "Index", "Donors", new { id = 1 }, null)
+                </p>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol'></script>
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=AkPhgx7hJ1HClrNXdmU1qr5CK84LtuFTbLSE51mLBC2zc3N48UxSyvS-JNBFXxcL&callback=loadMapScenario' async defer></script>
+
+    <script type='text/javascript'>
+        var addresses = [];
+        var map, drawingManager, outputPanel;
+
+        @if (markers != null)
+        {
+            foreach (var point in markers)
+            {
+                @:addresses.push({ Lat : '@point.Lat' , Lng : '@point.Lng' , label : '@point.Title', color : '@point.Color'});
+            }
+        }
+
+        function loadMapScenario() {
+
+            var bounds = Microsoft.Maps.LocationRect.fromLocations(new Microsoft.Maps.Location(37.217863, 38.811895), new Microsoft.Maps.Location(28.965617, 48.589727));
+            map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+                /* No need to set credentials if already passed in URL */
+                maxBounds: bounds
+            });
+
+
+
+            outputPanel = document.getElementById('output');
+
+            // Highlighting the border of bounds on the map
+            var boundsBorder = new Microsoft.Maps.Polyline([bounds.getNorthwest(),
+                new Microsoft.Maps.Location(bounds.getNorthwest().latitude, bounds.getSoutheast().longitude),bounds.getSoutheast(),
+                new Microsoft.Maps.Location(bounds.getSoutheast().latitude, bounds.getNorthwest().longitude), bounds.getNorthwest()],
+                { strokeColor: 'red', strokeThickness: 5 });
+            map.entities.push(boundsBorder);
+
+            //Load the Drawing Tools and Spatial Math modules.
+            Microsoft.Maps.loadModule(['Microsoft.Maps.DrawingTools', 'Microsoft.Maps.SpatialMath'], function () {
+                var tools = new Microsoft.Maps.DrawingTools(map);
+                tools.showDrawingManager(function (manager) {
+                    //Store a reference to the drawing manager as it will be useful later.
+                    drawingManager = manager;
+                    Microsoft.Maps.Events.addHandler(drawingManager, 'drawingModeChanged', function (e) {
+                        if (e !== Microsoft.Maps.DrawingTools.DrawingMode.edit &&
+                            e !== Microsoft.Maps.DrawingTools.DrawingMode.erase) {
+                            //Remove any shapes already on the drawing layer.
+                            drawingManager.clear();
+                        }
+                    });
+                    Microsoft.Maps.Events.addHandler(drawingManager, 'drawingChanging', measureShape);
+                    Microsoft.Maps.Events.addHandler(drawingManager, 'drawingStarted', measureShape);
+                });
+            });
+
+            var locs = [];
+            for (var i = 0; i < addresses.length; i++) {
+                locs[i] = new Microsoft.Maps.Location(addresses[i].Lat, addresses[i].Lng);
+                var pin = new Microsoft.Maps.Pushpin(locs[i], { color: addresses[i].color, title: addresses[i].label });
+                map.entities.push(pin);
+            }
+
+            var polyline = new Microsoft.Maps.Polyline(locs, null);
+            map.entities.push(polyline);
+
+            if (locs.length > 0) {
+                map.setView({
+                    bounds: Microsoft.Maps.LocationRect.fromLocations(locs),
+                    padding: 100
+                });
+            }
+            else {
+                map.setView({
+                    mapTypeId: Microsoft.Maps.MapTypeId.road,
+                    center: new Microsoft.Maps.Location(33.313432, 44.361591),
+                    zoom: 11
+                });
+            }
+        }
+
+        function measureShape(shape) {
+            if (shape instanceof Microsoft.Maps.Pushpin) {
+                outputPanel.innerHTML = 'Shape: Pushpin<br/>' + shape.getLocation();
+            } else if (shape instanceof Microsoft.Maps.Polyline) {
+                //Measure the length of the polyline.
+                var length = Microsoft.Maps.SpatialMath.Geometry.calculateLength(shape, Microsoft.Maps.SpatialMath.DistanceUnits.Miles);
+                //Round values to 2 decimals.
+                length = Math.round(length * 100) / 100;
+                outputPanel.innerHTML = 'Shape: Polyline<br/>Length: ' + length + ' miles';
+            } else if (shape instanceof Microsoft.Maps.Polygon && shape.getLocations().length > 3) {
+                //Calculate the area of the polygon.
+                var area = Microsoft.Maps.SpatialMath.Geometry.area(shape, Microsoft.Maps.SpatialMath.AreaUnits.Acres);
+                //Calculate the perimeter of the polygon.
+                var perimeter = Microsoft.Maps.SpatialMath.Geometry.calculateLength(shape, Microsoft.Maps.SpatialMath.DistanceUnits.Miles);
+                //Round values to 2 decimals.
+                area = Math.round(area * 100) / 100;
+                perimeter = Math.round(perimeter * 100) / 100;
+                outputPanel.innerHTML = 'Shape: Polyline<br/>Area: ' + area + ' Acres</sup><br/>Perimeter: ' + perimeter + ' miles';
+            }
+        }
+    </script>
+}
