@@ -40,7 +40,7 @@ namespace Khobzatna
                 user.UserName = "Admin";
                 user.Email = "admin@admin.com";
                 user.EmailConfirmed = true;
-                string userPWD = "@Aa123";
+                string userPWD = "@QWEasd123";
 
                 var chkUser = UserManager.Create(user, userPWD);
 
